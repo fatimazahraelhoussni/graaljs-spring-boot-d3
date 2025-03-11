@@ -42,7 +42,7 @@ This project is a Spring Boot application that generates and renders an SVG grap
 1.  **Clone the repository:**
 
     ```bash
-    git clone https://github.com/your-repo/d3demo.git
+    git clone https://github.com/graalvm/graal-languages-demos.git
     cd graaljs/graaljs-spring-boot-d3
     ```
 
