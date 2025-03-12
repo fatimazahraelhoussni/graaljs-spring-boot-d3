@@ -11,10 +11,13 @@ import java.nio.file.Paths;
 @Service
 public class GraphService {
 
+    private final Engine sharedEngine = Engine.newBuilder().option("engine.TraceCompilation", "true").build();
+
     public String generateGraph() throws IOException {
         String jsCode = new String(Files.readAllBytes(Paths.get("src/main/resources/static/graph.js")));
 
         try (Context context = Context.newBuilder("js")
+                .engine(sharedEngine)
                 .allowIO(IOAccess.ALL)
                 .allowExperimentalOptions(true)
                 .option("js.commonjs-require", "true")
