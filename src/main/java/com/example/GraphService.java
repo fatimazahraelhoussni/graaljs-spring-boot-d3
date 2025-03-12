@@ -20,12 +20,9 @@ public class GraphService {
                 .option("js.commonjs-require", "true")
                 .build()) {
 
-            context.eval("js", "if (typeof globalThis.linkedom === 'undefined') { " +
-                    "globalThis.linkedom = require('linkedom'); " +
-                    "globalThis.document = linkedom.parseHTML('<html><body></body></html>').document; }");
-
             Value result = context.eval("js", jsCode);
-            return result.asString();
+
+           return result.asString();
 
         } catch (PolyglotException e) {
             System.err.println("JavaScript Error: " + e.getMessage());
