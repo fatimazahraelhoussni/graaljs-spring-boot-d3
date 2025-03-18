@@ -46,19 +46,15 @@ This project is a Spring Boot application that generates and renders an SVG grap
     cd graaljs/graaljs-spring-boot-d3
     ```
 
-2.  **Install Node.js dependencies:**
+2.  **Build and run the Spring Boot application:**
 
     ```bash
-    npm install d3 linkedom
-    ```
-
-3.  **Build and run the Spring Boot application:**
-
-    ```bash
+    mvn clean
+    mvn install
     mvn spring-boot:run
     ```
 
-4.  **Open your browser and visit:**
+3.  **Open your browser and visit:**
 
     ```
     http://localhost:8081/graph
