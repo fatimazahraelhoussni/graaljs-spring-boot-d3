@@ -24,8 +24,8 @@ public class GraphService {
                 .build()) {
 
 //            Value result = context.eval("js", jsCode);
-            Source photonSource = Source.newBuilder("js", new ClassPathResource("static/graph.js").getURL()).mimeType("application/javascript+module").build();
-            Value result = context.eval(photonSource);
+            Source Source = Source.newBuilder("js", new ClassPathResource("static/graph.js").getURL()).mimeType("application/javascript+module").build();
+            Value result = context.eval(Source);
             return result.asString();
 
         } catch (PolyglotException e) {
