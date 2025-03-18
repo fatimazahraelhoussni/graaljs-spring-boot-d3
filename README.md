@@ -9,7 +9,6 @@ This project is a Spring Boot application that generates and renders an SVG grap
 * Java 21+
 * Maven
 * GraalVM with JavaScript support (GraalJS)
-* Node.js and npm (for installing dependencies like D3.js and Linkedom)
 
 ## Technologies Used
 
