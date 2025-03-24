@@ -1,74 +1,85 @@
 var d3 = require('./node_modules/d3/dist/d3.js');
-// Importing the Linkedom library to create a virtual DOM environment (needed since we don't have a real browser)
 var linkedom = require('linkedom');
 
-// Creating a virtual HTML document using Linkedom
 globalThis.document = linkedom.parseHTML('<html><body></body></html>').document;
 
-const width = 800;
-const height = 800;
+const width = 600;
+const height = 600;
 const margin = 50;
-const radius = Math.min(width, height) / 2 - margin;
+const innerRadius = Math.min(width, height) * 0.5 - 60;
+const outerRadius = innerRadius + 20;
 
-// Data without any external source
 const data = [
-    { category: 'A', value: 10 },
-    { category: 'B', value: 20 },
-    { category: 'C', value: 30 },
-    { category: 'D', value: 40 },
-    { category: 'E', value: 50 }
+    [0, 20, 10, 5, 8, 3, 12, 1],
+    [20, 0, 15, 7, 6, 9, 4, 2],
+    [10, 15, 0, 12, 3, 5, 6, 8],
+    [5, 7, 12, 0, 10, 1, 7, 3],
+    [8, 6, 3, 10, 0, 14, 9, 11],
+    [3, 9, 5, 1, 14, 0, 8, 6],
+    [12, 4, 6, 7, 9, 8, 0, 10],
+    [1, 2, 8, 3, 11, 6, 10, 0]
 ];
 
-// Color scale for the segments
-const color = d3.scaleOrdinal(d3.schemeCategory10);
+const names = ["Java", "JavaScript", "Python", "Ruby", "R", "C/C++", "Native Image", "Polyglot"];
+const colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f"];
 
-// Create the SVG container for the chart
-const svg = d3.create("svg")
-    .attr("width", width)
-    .attr("height", height)
-    .style("background-color", "#f0f8ff");
+const chord = d3.chord()
+    .padAngle(0.05)
+    .sortSubgroups(d3.descending)
+    .sortChords(d3.descending);
 
-// Group for the radial chart content
-const g = svg.append("g")
-    .attr("transform", `translate(${width / 2}, ${height / 2})`);
+const chords = chord(data);
 
-// Arc generator
 const arc = d3.arc()
-    .innerRadius(0)
-    .outerRadius(radius);
+    .innerRadius(innerRadius)
+    .outerRadius(outerRadius);
 
-// Pie chart generator (converts data into arcs)
-const pie = d3.pie()
-    .value(d => d.value)
-    .sort(null);
+const ribbon = d3.ribbon()
+    .radius(innerRadius);
 
-// Create the segments of the chart (each data point becomes an arc)
-const arcs = g.selectAll(".arc")
-    .data(pie(data))
-    .enter().append("g")
-    .attr("class", "arc");
+const color = d3.scaleOrdinal()
+    .domain(names)
+    .range(colors);
 
-// Draw the arcs (segments)
-arcs.append("path")
-    .attr("d", arc)
-    .attr("fill", (d, i) => color(i));
+const svg = d3.create('svg')
+    .attr('width', width)
+    .attr('height', height)
+    .append('g')
+    .attr('transform', `translate(${width / 2},${height / 2})`);
 
-// Add labels for each segment
-arcs.append("text")
-    .attr("transform", d => `translate(${arc.centroid(d)})`)
-    .attr("text-anchor", "middle")
-    .text(d => d.data.category)
-    .style("fill", "white")
-    .style("font-size", "14px");
+svg.append('g')
+    .selectAll('g')
+    .data(chords.groups)
+    .enter()
+    .append('g')
+    .append('path')
+    .style('fill', d => color(names[d.index]))
+    .style('stroke', 'black')
+    .attr('d', arc);
 
-// Title
-svg.append("text")
-    .attr("x", width / 2)
-    .attr("y", margin / 2)
-    .attr("text-anchor", "middle")
-    .style("font-size", "18px")
-    .style("font-weight", "bold")
-    .text("Radial Chart Example");
+svg.append('g')
+    .selectAll('path')
+    .data(chords)
+    .enter()
+    .append('path')
+    .attr('d', ribbon)
+    .style('fill', d => color(names[d.source.index]))
+    .style('opacity', 0.8)
+    .style('stroke', 'black');
 
-// Exporting the generated SVG as an HTML string
+svg.append('g')
+    .selectAll('text')
+    .data(chords.groups)
+    .enter()
+    .append('text')
+    .each(d => { d.angle = (d.startAngle + d.endAngle) / 2; })
+    .attr('dy', '.35em')
+    .attr('transform', d => `
+        rotate(${(d.angle * 180 / Math.PI - 90)})
+        translate(${outerRadius + 10})
+        ${d.angle > Math.PI ? 'rotate(180)' : ''}
+    `)
+    .style('text-anchor', d => d.angle > Math.PI ? 'end' : null)
+    .text(d => names[d.index]);
+
 module.exports = svg.node().outerHTML;
