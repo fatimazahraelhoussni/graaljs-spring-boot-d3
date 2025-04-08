@@ -35,7 +35,6 @@ jobs:
       # Build, test, and run Spring Boot application
       - name: Build, test, and run Spring Boot application
         run: |
-          ./mvnw clean test -Dspring.mvc.async.request-timeout=60000
           ./mvnw spring-boot:run &
 
       # Wait for application to start and run test
