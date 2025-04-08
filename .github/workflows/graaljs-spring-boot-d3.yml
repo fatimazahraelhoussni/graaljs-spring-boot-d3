@@ -31,7 +31,6 @@ jobs:
           distribution: 'graalvm'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           cache: 'maven'
-          native-image-job-reports: 'true'
 
       # Build, test, and run Spring Boot application
       - name: Build, test, and run Spring Boot application
