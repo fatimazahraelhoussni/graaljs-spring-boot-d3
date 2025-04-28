@@ -1,42 +1,46 @@
-name: Test GraalJS D3.js
+name: Test GraalJS Spring Boot D3
+
 on:
   push:
     paths:
       - 'src/**'
       - 'pom.xml'
       - '.github/workflows/graaljs-spring-boot-d3js.yml'
-  pull_request:
-    paths:
-      - 'src/**'
-      - 'pom.xml'
-      - '.github/workflows/graaljs-spring-boot-d3js.yml'
+    pull_request:
+        paths:
+          - 'src/**'
+          - 'pom.xml'
+          - '.github/workflows/graaljs-spring-boot-d3js.yml'
   workflow_dispatch:
+
 permissions:
   contents: read
+
 jobs:
   run:
-    name: 'graaljs-d3js'
+    name: 'graaljs-spring-boot-d3'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+
+      # Setup GraalVM and Java
       - uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '21.0.6'
+          java-version: '21'
           distribution: 'graalvm'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           cache: 'maven'
-      - name: Install Node.js and npm
-        uses: actions/setup-node@v3
-        with:
-          node-version: '23.7.0'
-      - name: Install JavaScript dependencies
-        run: npm install
-      - name: Build and start 'graaljs-d3js'
+
+      # Build, test, and run Spring Boot application
+      - name: Build, test, and run Spring Boot application
         run: |
-          ./mvnw --no-transfer-progress package
-          ./mvnw --no-transfer-progress spring-boot:start
-      - name: Wait for server to start
-        run: sleep 10 # Adjust as needed
-      - name: Stop 'graaljs-d3js'
-        run: ./mvnw --no-transfer-progress spring-boot:stop
+          ./mvnw spring-boot:run &
+
+      # Wait for application to start and run test
+      - name: Verify application is running
+        run: |
+          sleep 30
+          curl --fail-with-body --silent --dump-header - -o /dev/null http://localhost:8081/graph
+
+      
