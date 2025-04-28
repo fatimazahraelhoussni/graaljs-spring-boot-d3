@@ -24,9 +24,14 @@ public class GraphService {
                 .build()) {
 
 //            Value result = context.eval("js", jsCode);
-            Source source = Source.newBuilder("js", new ClassPathResource("static/graph.js").getURL()).mimeType("application/javascript+module").build();
-            Value result = context.eval(source);
-            return result.asString();
+            Source source = Source.newBuilder("js", new ClassPathResource("static/dist/graph.bundle.js").getURL()).mimeType("application/javascript+module").build();
+
+            context.eval(source); // <-- Cette ligne est manquante !!!
+
+            Value svgContent = context.getBindings("js").getMember("graphSvg");
+            return svgContent.asString();
+
+
 
         } catch (PolyglotException e) {
             System.err.println("JavaScript Error: " + e.getMessage());

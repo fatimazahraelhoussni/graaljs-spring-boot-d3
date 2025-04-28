@@ -1,7 +1,7 @@
-var d3 = require('./node_modules/d3/dist/d3.js');
-var linkedom = require('linkedom');
+import * as d3 from 'd3';
+import { parseHTML } from 'linkedom';
 
-globalThis.document = linkedom.parseHTML('<html><body></body></html>').document;
+globalThis.document = parseHTML('<html><body></body></html>').document;
 
 const width = 600;
 const height = 600;
@@ -82,4 +82,8 @@ svg.append('g')
     .style('text-anchor', d => d.angle > Math.PI ? 'end' : null)
     .text(d => names[d.index]);
 
-module.exports = svg.node().outerHTML;
+const svgString = svg.node().outerHTML;
+
+globalThis.graphSvg = svgString;
+
+export default svgString;
